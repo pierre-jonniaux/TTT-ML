@@ -80,9 +80,15 @@ class Board:
 			content = ""
 			for pos in line:
 				content += self._state[pos]
-			if content in ["XXX", "OOO"]:
-				self._winner = self._curr_player
-				return True			
+			if content == "XXX":
+				self._winner = "X"
+				assert self._curr_player == "X", f"player is {self._curr_player}"
+				return True
+			elif content == "OOO":
+				self._winner = "O"
+				assert self._curr_player == "O", f"player is {self._curr_player}"
+				return True
+				
 		return False
 
 	def is_draw_game(self):
@@ -117,6 +123,8 @@ class Board:
 			print("### Game starting now ###")			
 		assert pos in self.get_empty_cells(), "out of bound or already played"
 		self._state[pos] = self._curr_player
+
+		print("now playing is:", self._curr_player)
 		print(self)
 		
 		if self.has_a_winner():

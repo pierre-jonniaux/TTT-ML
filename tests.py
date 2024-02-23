@@ -32,3 +32,10 @@ def display_stats(results):
 	print("X win : {}".format("#"*results.count("X")))
 	print("O win : {}".format("#"*results.count("O")))
 	print("Draw  : {}".format("#"*results.count("-")))
+
+def test_board_loading(b):
+    states = ["--- -X- ---","X-- --- ---","XXO OOX ---","XX- OOO XOX"]
+    for state in states:
+        b.reset()
+        b.load(state)
+        print(b, "++++++\n")

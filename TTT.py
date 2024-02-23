@@ -9,7 +9,7 @@
 
 from random import choice
 from minimax import minimax_move
-from tests import test_basic_fct, test_random_games
+from tests import test_basic_fct, test_random_games, test_board_loading
 from copy import deepcopy
 
 STATEm2 = "X-- OOX XOX"
@@ -131,12 +131,9 @@ class Board:
 			self.prompt_end_game(self._curr_player)
 		elif self.is_draw_game():
 			self.prompt_end_game("-")
-
-		# do last
-		# self._played_move.append(pos)
-		# pos = self._empty_cells.pop()
-		self.switch_player()
-
+		else:
+			self.switch_player()
+		
 	def prompt_end_game(self, winner):
 		assert winner in ["X", "O", "-"]
 		if winner == "-":
@@ -168,17 +165,34 @@ class Board:
 	def reset(self):
 		self.__init__()
 
+	def load(self, state):
+		"""
+		state : a string such as "X-- OOX XOX"
+		"""
+		symbols = [c for c in list(state) if self.is_valid_symbol(c)]
+		assert len(symbols) == self._size ** 2
+		for r in range(self._size):
+			for c in range(self._size):
+				assert (r, c) in self.get_empty_cells(), "invalid entry"
+				symbol = symbols[c + (self._size * r)]
+				self._state[(r, c)] = symbol
+		assert self.is_valid_board_state(), "invalid board state"
 
-	# def load_state(self, state):
-		# """
-		# state : a string such as "X-- OOX XOX"
-		# """
-		# state = [c for c in list(state) if self.is_valid_symbol(c)]
-		# assert len(state) == self._size ** 2
-		# for r in range(self._size):
-			# for c in range(self._size):
-				# self._state[(r, c)] = "-"
-
+	def is_valid_board_state(self):
+		# check symbols
+		for symbol in self._state.values():
+			if not self.is_valid_symbol(symbol):
+				return false
+		xs = len(self.get_X_cells())
+		os = len(self.get_O_cells())
+		# check numbers of entries
+		if xs != 0 and (xs != os and xs != os+1):
+			print("X : {} O {}".format(xs,os))
+			return False
+		if xs == 0 and os != 0:
+			return False 
+		return True
+		
 	# def update():
 		# """
 		# - scan board state
@@ -200,12 +214,12 @@ class Board:
 def main():
 	b = Board()
 	#test_basic_fct(b)
-	test_random_games(b, 10)
+	# test_random_games(b, 10)
+	test_board_loading(b)
 	#c = b.clone()
 	#b.play_at((1,1))
 	#print(b)
 	#print(c)
-	#b.load_state(STATEm2)
 
 	
 main()
@@ -218,15 +232,11 @@ main()
 	# if win -> win endgame
 	# if board fill -> draw game
 
-# functions for sending board state and receiving move to/from minimax
+# - functions for sending board state and receiving move to/from minimax
 
 # - minmax algo machine learning
 
-# - NN algo machine learning (from scratcyh)
-
-# - modify so we can pass halfway game state
-
-# - peut etre implementer une methode update qui recheck tout chaque fois
+# - NN algo machine learning (from scratch)
 
 # - check that a board state is valid
 

@@ -16,6 +16,9 @@ def minimax_move(board):
 	Takes a board object from TTT.py as input
 	Return a tuple (row, col)
 	"""
+	best_score = 0
+#	while not (board.game_is_over):
+		
 	return  "roger Roger"
 	
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # b is a Board instance from TTT.py
-from minimax import cheated
+
 
 def test_basic_fct(b):
     Xwin = [(1,1), (0,1), (0,2), (1,2), (2,2), (1,0),(2,0)]

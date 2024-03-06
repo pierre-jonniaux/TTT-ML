@@ -28,164 +28,28 @@
 #   - get_winner()
 #   - get_empty_cells()
 
-
-
-
-
-def temp_minimax_move(board):
-    """
-    Takes a board object from TTT.py as input
-    Return a tuple (row, col) and a score
-    """
-    score = 0
-    pos = (0, 0)
-#########################  WAS HERE ################################
-    # while more than one move left : recursion
-    while len(board.get_empty_cells()) > 1 and not board.game_is_over():
-        for possible_move in board.get_empty_cells():
-            possible_board = board.clone()
-            playing = possible_board.get_current_player()
-            possible_board.play_at(possible_move)
-            # if game over no score to choose from
-            if possible_board.game_is_over():
-                    if playing == "X":    
-                        return possible_move, 1
-                    elif playing == "O":    
-                        return possible_move, -1
-                    elif playing == "-":    
-                           return possible_move, 0
-            # game is not over : we choose from several scores
-            # if playing == "X":
-                        # return
-                    # elif playing == "O":
-                        # return possible_move, -1
-                    # elif playing == "-":
-                           # return possible_move, 0
-            # mm_move, score = minimax_move(possible_board)
-            # return a score and a pos
-            
-#########################  WAS HERE ################################
-
-    # Out of while without a game over so far meaning only one position 
-    # left before P1win/P1loss/draw. Play it/update board and return info
-    possible_board = board.clone()
-    last_move = possible_board.get_empty_cells()
-    playing = possible_board.get_current_player() 
-    possible_board.play_at(last_move)
-    if playing == "X":    
-        return last_move, 1
-    elif playing == "O":    
-        return last_move, -1
-    elif playing == "-":    
-           return last_move, 0
-
-def compute_moves(board):
-    
-    pass
-
-def minimax_move(board):
-    best_score = 0
-    best_pos = board.get_empty_cells()[-1]
-    # tmp_board = board.clone()
-
-    if not board.game_is_over():
-        for possible_move in board.get_empty_cells():
-            tmp_board = board.clone()
-            tmp_board.play_at(possible_move)
-
-            print("b: \n",tmp_board)
-            print("s: ",tmp_board.game_is_over())
-            #print("w: ",tmp_board.get_winner()) 
-            if tmp_board.game_is_over():
-                if tmp_board.get_winner() == "X":
-                    best_pos, best_score = possible_move, 1
-                elif tmp_board.get_winner() == "O":
-                    best_pos, best_score = possible_move, -1
-                elif tmp_board.get_winner() == "-":
-                    best_pos, best_score = possible_move, 0
-            else:    
-                pos, score = minimax_move(tmp_board)
-                if score > best_score:
-                    best_score = score
-                    best_pos = pos
-            return best_pos, best_score
-
-def recurs_A(board):
-    if board.game_is_over():
-        print("got to leaf\n{}".format(board))
-    else:
-        for possible_move in board.get_empty_cells():
-            print("InterNode\n{}".format(board))
-            tmp_board = board.clone()
-            tmp_board.play_at(possible_move)
-            print("AfterPlay\n{}".format(tmp_board))
-            recurs(tmp_board)
-
-    return("yayay")     
-
-
-
-def recurs(board):
-    best_score = 0
-    best_pos = board.get_empty_cells()[0]
-    if not board.game_is_over():
-        for possible_move in board.get_empty_cells():
-            print("InterNode\n{}".format(board))
-            tmp_board = board.clone()
-            tmp_board.play_at(possible_move)
-            print("AfterPlay\n{}".format(tmp_board))
-            if tmp_board.game_is_over():
-                print("got to leaf\n{}".format(tmp_board))
-                return possible_move, SCORING[tmp_board.get_winner()]
-            else:
-                pos, score = recurs(tmp_board)
-                if score > best_score:
-                    best_score = score
-                    best_pos = pos
-    return best_pos, best_score
-# 
-def score(board):
-    if board.get_winner == "X":
-        return 1
-    elif board.get_winner == "0":
-        return -1
-    else:
-        return 0
-
-# def minimax(board):
-    # if board.get_current_player() == "X":
-        # max_score_index = scores.index(max(scores))
-        # return moves[max_score_index], scores[max_score_index]
-    # if board.get_current_player() == "O":
-        # min_score_index = scores.index(min(scores))
-        # return moves[min_score_index], scores[min_score_index]
-
-
 SCORING = {"X":1 , "O":-1, "-":0}
-    
-def cheated(board):
+
+def mm(board):
+    """Return a position and a score"""
+
     if board.game_is_over():
         return board.get_latest_move(), SCORING[board.get_winner()]
+
     scores = []
     moves = []
-
-    # populat score array
     for possible_move in board.get_empty_cells():
-        tmp_board = board.clone()
-        tmp_board.play_at(possible_move)
-        scores.append(cheated(tmp_board)[1])
-        moves.append(possible_move)    
-    print(board)
-    print(scores)
-    print(moves)
-    # MINIMAX Calculation
-    #re moves[scores.index(max(scores))], scores.index(max(scores))
-    if tmp_board.get_current_player() == "X":
-        max_score_index = scores.index(max(scores))
-        return moves[max_score_index], scores[max_score_index]
-    if tmp_board.get_current_player() == "O":
-        min_score_index = scores.index(min(scores))
-        return moves[min_score_index], scores[min_score_index]
+        clone = board.clone()
+        clone.play_at(possible_move)
+        move, score = mm(clone)
+        moves.append(move)
+        scores.append(score)
+    # print(scores, moves)
+    # here current player is the one that has played already
+    if board.get_current_player() == "X":
+        return moves[scores.index(max(scores))], max(scores)
+    if board.get_current_player() == "O":
+        return moves[scores.index(min(scores))], min(scores)
 
 def monte_carlo(board, tries=100):
     """
@@ -218,13 +82,44 @@ def monte_carlo(board, tries=100):
             best_score = weights[p]
             best_pos = p
     return best_pos
-        
-        
+  
 
             
 # TODO
 # - take symmetry into account. There are only 756 possibles boards
 #   if rotation and symetry are taken into account.
-# - tree pruning
+# - tree pruning (alpha beta)
 # - during recursion cache the motifs already seen/computed (look at
 #   that YT, mcoding I think, fibonnaci with cached values video)
+
+
+# 
+# def mmpruning(board,alpha,beta):
+    # """Return a position and a score"""
+# 
+    # if board.game_is_over():
+        # return board.get_latest_move(), SCORING[board.get_winner()]
+# 
+    # scores = []
+    # moves = []
+    # for possible_move in board.get_empty_cells():
+        # clone = board.clone()
+        # clone.play_at(possible_move)
+        # move, score = mm(clone, alpha, beta)
+        # moves.append(move)
+        # scores.append(score)
+    # # print(scores, moves)
+    # # here current player is the one that has played already
+        # if board.get_current_player() == "O":
+            # m, s = moves[scores.index(max(scores))], max(scores)
+            # alpha = max(alpha, s)
+            # if beta <= alpha:
+                # break
+            # return m, s
+        # if board.get_current_player() == "X":
+            # m, s = moves[scores.index(min(scores))], min(scores)
+            # beta = min(beta, s)
+            # if beta <= alpha:
+                # break
+            # return m, s
+

@@ -30,6 +30,54 @@
 
 SCORING = {"X":1 , "O":-1, "-":0}
 
+def mm2(board):
+    """Return a position and a score"""
+    max_turn = board.get_current_player() == "X"
+    
+    if board.game_is_over():
+        return board.get_latest_move(), SCORING[board.get_winner()]
+
+    possible_moves = board.get_empty_cells()
+
+    if max_turn:
+        scores = []
+        moves = []
+        for move in possible_moves:
+            clone = board.clone()
+            clone.play_at(move)
+            move, score = mm2(clone)
+            moves.append(move)
+            scores.append(score)
+        return moves[scores.index(max(scores))], max(scores)
+        # scores = [mm2(board.clone().play_at(move)) for move in possible_moves]
+        # moves = [move for move in possible_moves]
+        # return moves[scores.index(max(scores))], max(scores)
+    else:
+        scores = []
+        moves = []
+        for move in possible_moves:
+            clone = board.clone()
+            clone.play_at(move)
+            move, score = mm2(clone)
+            moves.append(move)
+            scores.append(score)
+        return moves[scores.index(min(scores))], min(scores)
+        # scores = [mm2(board.clone().play_at(move)) for move in possible_moves]
+        # moves = [move for move in possible_moves]
+        # return moves[scores.index(min(scores))], min(scores)
+
+def best_move(board):
+    scores = []
+    moves = []
+    for possible_move in board.get_empty_cells():
+        clone = board.clone()
+        clone.play_at(possible_move)
+        move, score = mm2(clone)
+        moves.append(move)
+        scores.append(score)
+    return moves[scores.index(max(scores))], max(scores)
+        
+
 def mm(board):
     """Return a position and a score"""
 
@@ -46,10 +94,18 @@ def mm(board):
         scores.append(score)
     # print(scores, moves)
     # here current player is the one that has played already
-    if board.get_current_player() == "X":
-        return moves[scores.index(max(scores))], max(scores)
-    if board.get_current_player() == "O":
-        return moves[scores.index(min(scores))], min(scores)
+        if board.get_current_player() == "O":
+            return moves[scores.index(max(scores))], max(scores)
+        if board.get_current_player() == "X":
+            return moves[scores.index(min(scores))], min(scores)
+
+
+def nim_minimax(ns):
+    
+    if ns.is_game_over():
+        return 1 if ns.get_winner() == 1 else -1
+
+
 
 def monte_carlo(board, tries=100):
     """

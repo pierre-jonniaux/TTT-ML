@@ -8,7 +8,7 @@
 # this time I m trying to code the class taking care of the game and board state by myself as well
 
 from random import choice
-from minimax import monte_carlo, mm
+from minimax import monte_carlo, mm2, best_move
 from tests import test_basic_fct, test_random_games, test_board_loading, test_minimax_games, test_monte_carlo_games
 from copy import deepcopy
 
@@ -276,12 +276,12 @@ class Board:
                 # if symbol == "-":
                     # pass
                     
-def main():
+if __name__ == "__main__":
     b = Board()
-    b.load("--- --- ---")
+    b.load("X-- -X- --O")
     print(b)
     while not b.game_is_over():
-        b.play_at(mm(b)[0])
+        b.play_at(best_move(b)[0])
         print(b)
 
 
@@ -304,8 +304,6 @@ def main():
     #print(b)
     #print(c)
 
-    
-main()
 
 
 # TODO
